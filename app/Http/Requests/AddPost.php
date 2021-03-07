@@ -26,8 +26,8 @@ class AddPost extends FormRequest
     public function validateInput(): void
     {
         $validator = Validator::make($this->request->all(), [
-            'title' => 'required|string',
-            'content' => 'required|string',
+            'title' => 'required|string|max:255',
+            'content' => 'required|string|max:30000',
         ]);
 
         $validator->validate();
