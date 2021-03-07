@@ -1,5 +1,9 @@
 <?php
 
+namespace App\Exceptions\Query;
+
+use RuntimeException;
+use Throwable;
 
 class ResourceNotFoundException extends RuntimeException
 {
