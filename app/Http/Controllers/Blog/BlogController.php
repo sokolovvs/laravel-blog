@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Blog;
 
 use App\Commands\Blog\Posts\CreatePost;
+use App\Commands\Blog\Posts\DeletePost;
+use App\Commands\Blog\Posts\UpdatePost;
 use App\Exceptions\Command\CommandException;
+use App\Exceptions\Query\ResourceNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddPost;
 use App\Queries\Blog\Posts\GetPostById;
@@ -36,16 +39,25 @@ class BlogController extends Controller
         return response()->view('blog.posts.form');
     }
 
-    public function update()
+    public function update(Request $request, UpdatePost $updatePost)
     {
+        try {
+            $updatePost->execute($request->all());
+        } catch (CommandException $commandException) {
 
+            if ($commandException->getPrevious() instanceof ResourceNotFoundException) {
+                abort(404, 'Resource not found');
+            }
+
+            abort(500, ' Internal server error');
+        }
     }
 
     public function getById(Request $request, GetPostById $getPostById)
     {
         try {
             return response()->view('blog.posts.detail', ['post' => $getPostById->find($request->get('id'))],);
-        } catch (Throwable $notFoundException) {
+        } catch (Throwable $throwable) {
             abort(404, 'Resource not found');
         }
     }
@@ -60,8 +72,17 @@ class BlogController extends Controller
         return response()->view('blog.posts.index', ['paginator' => $paginator]);
     }
 
-    public function delete()
+    public function delete(Request $request, DeletePost $deletePost)
     {
+        try {
+            $deletePost->execute($request->get('id'));
+        } catch (CommandException $commandException) {
 
+            if ($commandException->getPrevious() instanceof ResourceNotFoundException) {
+                abort(404, 'Resource not found');
+            }
+
+            abort(500, ' Internal server error');
+        }
     }
 }
