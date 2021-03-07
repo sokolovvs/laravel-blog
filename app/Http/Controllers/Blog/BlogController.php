@@ -7,7 +7,7 @@ use App\Exceptions\Command\CommandException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddPost;
 use App\Queries\Blog\Posts\GetPostById;
-use App\Queries\Blog\Posts\PaginatedPostFromPgDb;
+use App\Queries\Blog\Posts\PaginatedPostsFromPgDb;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
@@ -50,9 +50,12 @@ class BlogController extends Controller
         }
     }
 
-    public function getByParams(Request $request, PaginatedPostFromPgDb $paginatedPostFromPgDb)
+    public function getByParams(Request $request, PaginatedPostsFromPgDb $paginatedPostFromPgDb)
     {
-        $paginator = $paginatedPostFromPgDb->find($request->all());
+        $params = $request->all();
+        $params['is_publish'] = true;
+
+        $paginator = $paginatedPostFromPgDb->find($params);
 
         return response()->view('blog.posts.index', ['paginator' => $paginator]);
     }

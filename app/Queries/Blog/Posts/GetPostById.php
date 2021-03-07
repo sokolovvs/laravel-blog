@@ -11,14 +11,20 @@ use ResourceNotFoundException;
 class GetPostById
 {
     /**
-     * @param $id
+     * @param string $id
+     * @param bool|null $isPublish , null if both
      * @return Post|Model
      */
-    public function find($id): Post
+    public function find(string $id, ?bool $isPublish = true): Post
     {
-        $post = Post::query()
-            ->where('id', '=', $id)
-            ->first();
+        $qb = Post::query()
+            ->where('id', '=', $id);
+
+        if (is_bool($isPublish)) {
+            $qb->where('is_publish', '=', $isPublish);
+        }
+
+        $post = $qb->first();
 
         if ($post === null) {
             throw new ResourceNotFoundException('Post not found');

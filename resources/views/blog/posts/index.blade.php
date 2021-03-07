@@ -21,6 +21,9 @@
                             <h2 class="post-title">{{ $post->title }}</h2>
                         </a>
                         <p>{{  (new DateTime($post->created_at))->format('d M, Y') }}</p>
+
+                        <p class="post-content">{{ $post->truncated_content }}...</p>
+                        <p><a href="{{ $post->getUrl() }}">Read more</a></p>
                     </div>
                     <hr>
                 @endforeach

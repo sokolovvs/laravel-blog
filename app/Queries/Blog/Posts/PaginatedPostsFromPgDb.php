@@ -4,8 +4,9 @@ namespace App\Queries\Blog\Posts;
 
 use App\Models\Blog\Post;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
-class PaginatedPostFromPgDb
+class PaginatedPostsFromPgDb
 {
     public function find(array $params): LengthAwarePaginator
     {
@@ -21,6 +22,8 @@ class PaginatedPostFromPgDb
 
         $qb->orderByDesc('created_at');
 
-        return $qb->paginate($params['limit'] ?? 10, '*', 'Posts', $params['page'] ?? 1);
+        $qb->select(['*', DB::raw('substr(content, 0, 300) AS truncated_content')]);
+
+        return $qb->paginate($params['limit'] ?? 10, '*', 'page', $params['page'] ?? 1);
     }
 }
