@@ -13,6 +13,7 @@ use App\Queries\Blog\Posts\GetPostById;
 use App\Queries\Blog\Posts\PaginatedPostsFromPgDb;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -64,12 +65,15 @@ class BlogController extends Controller
 
     public function getByParams(Request $request, PaginatedPostsFromPgDb $paginatedPostFromPgDb)
     {
-        $params = $request->all();
-        $params['is_publish'] = true;
+        $params = $request->all(['search']);
+
+        if (Auth::check()) {
+            $params['include_hidden'] = $request->get('include_hidden');
+        }
 
         $paginator = $paginatedPostFromPgDb->find($params);
 
-        return response()->view('blog.posts.index', ['paginator' => $paginator]);
+        return response()->view('blog.posts.index', ['paginator' => $paginator, 'filters' => $request->query()]);
     }
 
     public function delete(Request $request, DeletePost $deletePost)

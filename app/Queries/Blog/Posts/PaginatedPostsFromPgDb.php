@@ -21,12 +21,12 @@ class PaginatedPostsFromPgDb
         $this->logger->debug('The system is going to search posts by params ' . json_encode($params));
         $qb = Post::query()->with('author');
 
-        if ($title = $params['title'] ?? null) {
-            $qb->where('title', 'LIKE', "$params%");
+        if ($search = $params['search'] ?? null) {
+            $qb->where('title', 'ilike', "%$search%");
         }
 
-        if (isset($params['is_publish']) && is_bool($params['is_publish'])) {
-            $qb->where('is_publish', '=', $params['is_publish']);
+        if (isset($params['include_hidden']) && $params['include_hidden'] != true) {
+            $qb->where('is_publish', '=', true);
         }
 
         $qb->orderByDesc('created_at');
