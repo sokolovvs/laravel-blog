@@ -25,7 +25,7 @@ class Post extends Model
 
     protected $fillable = ['id', 'title', 'content', 'is_publish', 'author_id'];
 
-    protected $primaryKey = 'guid';
+    public $incrementing = false;
 
     public function author()
     {
