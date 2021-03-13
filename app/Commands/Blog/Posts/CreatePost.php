@@ -5,6 +5,7 @@ namespace App\Commands\Blog\Posts;
 
 
 use App\Exceptions\Command\CommandException;
+use App\Jobs\Blog\Post\PostWasChanged;
 use App\Models\Blog\Post;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -33,6 +34,14 @@ class CreatePost
         } catch (Throwable $throwable) {
             $this->logger->alert($throwable->getMessage() . PHP_EOL . $throwable->getTraceAsString());
             throw CommandException::fromError($throwable);
+        }
+
+        try {
+            $this->logger->debug(sprintf("The system is going to register a event %s", PostWasChanged::class));
+            dispatch(new PostWasChanged($post->id));
+            $this->logger->debug(sprintf("Event %s was registered", PostWasChanged::class));
+        } catch (Throwable $throwable) {
+            $this->logger->warning(sprintf("The system could not register a event %s", PostWasChanged::class));
         }
     }
 }
