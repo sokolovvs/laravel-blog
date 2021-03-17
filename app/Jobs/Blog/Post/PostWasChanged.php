@@ -10,7 +10,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Psr\Log\LoggerInterface;
-use Throwable;
 
 class PostWasChanged implements ShouldQueue
 {
@@ -38,12 +37,8 @@ class PostWasChanged implements ShouldQueue
     {
         $logger->debug(sprintf("Start handling a %s event", self::class));
 
-        try {
-            $post = Post::query()->find($this->postId);
-            $indexPost->save($post);
-            $logger->debug(sprintf("Post %s was handled", $this->postId));
-        } catch (Throwable $throwable) {
-            $logger->alert(sprintf("Handling of event %s was failed", self::class));
-        }
+        $post = Post::query()->find($this->postId);
+        $indexPost->save($post);
+        $logger->debug(sprintf("Post %s was handled", $this->postId));
     }
 }
