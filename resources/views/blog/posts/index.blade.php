@@ -106,7 +106,9 @@
         return {
             'search': document.getElementById('search-input').value,
             'page': document.getElementById('page-value').value,
+            @auth
             'include_hidden': +$('#include-hidden-input').is(":checked")
+            @endauth
         };
     }
 
