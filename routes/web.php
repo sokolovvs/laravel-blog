@@ -30,8 +30,8 @@ Route::group(['prefix' => 'posts'], function (Router $router) {
     Route::middleware(['auth'])->group(
         function (Router $router) {
             $router->match(['GET', 'POST'], 'create', [BlogController::class, 'create'])->name('create-post');
-            $router->put('update', [BlogController::class, 'update']);
-            $router->delete('delete', [BlogController::class, 'delete']);
+            $router->match(['GET', 'PUT'], 'update', [BlogController::class, 'update'])->name('update-post');
+            $router->delete('delete', [BlogController::class, 'delete'])->name('delete-post');
         }
     );
 });

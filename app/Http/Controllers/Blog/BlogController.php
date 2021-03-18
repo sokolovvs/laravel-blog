@@ -14,6 +14,7 @@ use App\Queries\Blog\Posts\PaginatedPostsFromPgDb;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -32,6 +33,8 @@ class BlogController extends Controller
                     ['errs' => $validationException->errors(), 'err_message' => $validationException->getMessage()],
                     Response::HTTP_UNPROCESSABLE_ENTITY);
             } catch (CommandException $commandException) {
+                Log::error($commandException->getMessage() . PHP_EOL . $commandException->getTraceAsString());
+
                 return response()->view('blog.posts.form', ['err_message' => 'Operation failed'],
                     Response::HTTP_INTERNAL_SERVER_ERROR);
             }
@@ -40,18 +43,25 @@ class BlogController extends Controller
         return response()->view('blog.posts.form');
     }
 
-    public function update(Request $request, UpdatePost $updatePost)
+    public function update(Request $request, UpdatePost $updatePost, GetPostById $getPostById)
     {
-        try {
-            $updatePost->execute($request->all());
-        } catch (CommandException $commandException) {
+        if ($request->isMethod('PUT')) {
+            try {
+                $updatePost->execute($request->all());
 
-            if ($commandException->getPrevious() instanceof ResourceNotFoundException) {
-                abort(404, 'Resource not found');
+                return response()->redirectTo($request->url() . '?id=' . $request->get('id'));
+            } catch (CommandException $commandException) {
+
+                if ($commandException->getPrevious() instanceof ResourceNotFoundException) {
+                    abort(404, 'Resource not found');
+                }
+
+                Log::error($commandException->getMessage() . PHP_EOL . $commandException->getTraceAsString());
+                abort(500, ' Internal server error');
             }
-
-            abort(500, ' Internal server error');
         }
+
+        return response()->view('blog.posts.form', ['post' => $getPostById->find($request->query('id'))]);
     }
 
     public function getById(Request $request, GetPostById $getPostById)
@@ -86,7 +96,10 @@ class BlogController extends Controller
                 abort(404, 'Resource not found');
             }
 
+            Log::error($commandException->getMessage() . PHP_EOL . $commandException->getTraceAsString());
             abort(500, ' Internal server error');
         }
+
+        return redirect(route('posts-list'));
     }
 }

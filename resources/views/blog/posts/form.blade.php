@@ -12,12 +12,17 @@
 @section('content')
     <div class="container">
         <p class="errors"> {{ $err_message ?? '' }}</p>
-        <form method="POST" method="{{route('create-post')}}">
+        <form method="POST"
+              action="{{$post ?? null ? route('update-post') : route('create-post')}}">
+            @if($post ?? null)
+                @method('put')
+            @endif
+
             @csrf
-            <input type="hidden" name="id">
+            <input type="hidden" name="id" value="{{ $post->id ?? '' }}">
             <div class="form-group">
                 <label for="title_input">Title</label>
-                <input name="title" id="title_input" type="text" class="form-control">
+                <input name="title" id="title_input" type="text" class="form-control" value="{{ $post->title ?? '' }}">
                 @if(isset($errs['title']))
                     <p class="errors">{{ implode('', $errs['title']) }}</p>
                 @endif
@@ -25,7 +30,9 @@
 
             <div class="form-group">
                 <label for="content_input">Content</label>
-                <textarea name="content" class="form-control" id="content_input"></textarea>
+                <textarea name="content" class="form-control" id="content_input">
+                    {{ $post->content ?? '' }}
+                </textarea>
                 @if(isset($errs['content']))
                     <p class="errors">{{ implode('', $errs['content']) }}</p>
                 @endif
