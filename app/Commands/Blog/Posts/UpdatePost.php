@@ -5,7 +5,7 @@ namespace App\Commands\Blog\Posts;
 
 
 use App\Exceptions\Command\CommandException;
-use App\Jobs\Blog\Post\PostWasChanged;
+use App\Jobs\Blog\Post\PostWasCreated;
 use App\Queries\Blog\Posts\GetPostById;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -35,11 +35,11 @@ class UpdatePost
         }
 
         try {
-            $this->logger->debug(sprintf("The system is going to register a event %s", PostWasChanged::class));
-            dispatch(new PostWasChanged($post->id));
-            $this->logger->debug(sprintf("Event %s was registered", PostWasChanged::class));
+            $this->logger->debug(sprintf("The system is going to register a event %s", PostWasCreated::class));
+            dispatch(new PostWasCreated($post->id));
+            $this->logger->debug(sprintf("Event %s was registered", PostWasCreated::class));
         } catch (Throwable $throwable) {
-            $this->logger->warning(sprintf("The system could not register a event %s", PostWasChanged::class));
+            $this->logger->warning(sprintf("The system could not register a event %s", PostWasCreated::class));
         }
     }
 }

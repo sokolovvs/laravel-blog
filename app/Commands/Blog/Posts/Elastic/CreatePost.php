@@ -5,7 +5,7 @@ namespace App\Commands\Blog\Posts\Elastic;
 use App\Models\Blog\Post;
 use Elasticsearch\Client;
 
-class IndexPost
+class CreatePost
 {
     private Client $client;
 
@@ -14,13 +14,12 @@ class IndexPost
         $this->client = $client;
     }
 
-    public function save(Post $post)
+    public function execute(Post $post)
     {
-        $this->client->index(
-            [
-                'index' => config('elasticsearch.index_posts'),
-                'body' => $post->toArray(),
-            ]
-        );
+        $this->client->index([
+            'index' => config('elasticsearch.index_posts'),
+            'body' => $post->toArray(),
+            'id' => $post->id,
+        ]);
     }
 }
