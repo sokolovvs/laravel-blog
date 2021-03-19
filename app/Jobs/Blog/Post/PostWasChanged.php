@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Blog\Post;
 
+use App\Commands\Blog\Posts\Elastic\DeletePost;
 use App\Commands\Blog\Posts\Elastic\IndexPost;
 use App\Models\Blog\Post;
 use Illuminate\Bus\Queueable;
@@ -31,14 +32,19 @@ class PostWasChanged implements ShouldQueue
      *
      * @param LoggerInterface $logger
      * @param IndexPost $indexPost
+     * @param DeletePost $deletePost
      * @return void
      */
-    public function handle(LoggerInterface $logger, IndexPost $indexPost)
+    public function handle(LoggerInterface $logger, IndexPost $indexPost, DeletePost $deletePost)
     {
-        $logger->debug(sprintf("Start handling a %s event", self::class));
+        $logger->debug(sprintf("Started to handle a %s event for post_id = %s", self::class, $this->postId));
 
-        $post = Post::query()->find($this->postId);
-        $indexPost->save($post);
-        $logger->debug(sprintf("Post %s was handled", $this->postId));
+        if ($post = Post::query()->find($this->postId)) {
+            $indexPost->save($post);
+        } else {
+            $deletePost->delete($this->postId);
+        }
+
+        $logger->debug(sprintf("Ended to handle a %s event for post_id = %s", self::class, $this->postId));
     }
 }
