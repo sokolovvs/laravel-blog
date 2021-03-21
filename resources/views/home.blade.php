@@ -10,6 +10,9 @@
                     <div class="card-body">
                         <a href="{{route('posts-list')}}">Posts</a>
                     </div>
+                    <div class="card-body">
+                        <a href="{{route('tags-list')}}">Tags</a>
+                    </div>
                 </div>
             </div>
         </div>
