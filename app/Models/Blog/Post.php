@@ -5,6 +5,7 @@ namespace App\Models\Blog;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 /**
  * Class Post
@@ -17,7 +18,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property User $author
  * @property string $created_at
  * @property string $updated_at
- * @property string truncated_content
+ * @property string $truncated_content
+ * @property Tag[]|Collection $tags
  */
 class Post extends Model
 {
@@ -30,6 +32,11 @@ class Post extends Model
     public function author()
     {
         return $this->belongsTo(User::class, 'author_id');
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'post_tag', 'post_id', 'tag_id');
     }
 
     public function getUrl(): string
