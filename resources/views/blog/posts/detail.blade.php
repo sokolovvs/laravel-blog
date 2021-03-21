@@ -35,7 +35,7 @@
                     </a>
                     <p>{{  (new DateTime($post->created_at))->format('d M, Y') }}</p>
                     <p class="post-content">
-                        {{ $post->content }}
+                        {!! $post->content !!}
                     </p>
                 </div>
             </div>

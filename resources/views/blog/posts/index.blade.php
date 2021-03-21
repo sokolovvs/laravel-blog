@@ -65,7 +65,7 @@
                         </a>
                         <p>{{  (new DateTime($post->created_at))->format('d M, Y') }}</p>
 
-                        <p class="post-content">{{ $post->truncated_content }}...</p>
+                        <p class="post-content">{!! $post->truncated_content ?? $post->content !!}</p>
                     </div>
                     <hr>
                 @endforeach
