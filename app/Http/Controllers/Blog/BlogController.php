@@ -75,7 +75,7 @@ class BlogController extends Controller
 
     public function getByParams(Request $request, PaginatedPostsFromPgDb $paginatedPostFromPgDb)
     {
-        $params = $request->all(['search']);
+        $params = $request->all(['search', 'page']);
 
         if (Auth::check()) {
             $params['include_hidden'] = $request->get('include_hidden');
