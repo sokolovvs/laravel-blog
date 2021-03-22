@@ -14,12 +14,12 @@ use Illuminate\Validation\ValidationException;
 
 class TagController extends Controller
 {
-    public function create(CreateTagRequest $request, CreateTagCommand $createPost)
+    public function create(CreateTagRequest $request, CreateTagCommand $createTagCommand)
     {
         if ($request->isMethod('POST')) {
             try {
                 $request->validateInput();
-                $createPost->execute($request->getData());
+                $createTagCommand->execute($request->getData());
 
                 return response()->redirectTo(route('tags-list'));
             } catch (ValidationException $validationException) {
